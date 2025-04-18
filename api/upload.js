@@ -18,7 +18,8 @@ const handler = async (req, res) => {
     if (err) return res.status(500).json({ error: 'Form parsing error' });
 
     const file = files.video;
-    const title = fields.title || 'haqqani-video';
+    const rawTitle = fields.title || 'haqqani-video';
+    const title = rawTitle.replace(/[^a-zA-Z0-9_\u0600-\u06FF\s-]/g, '').trim();
     const fileStream = fs.createReadStream(file.filepath);
     const key = `haqqani_${Date.now()}_${file.originalFilename}`;
 
