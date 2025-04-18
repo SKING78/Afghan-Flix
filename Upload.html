@@ -1,0 +1,52 @@
+<!-- File: upload.html -->
+<!DOCTYPE html>
+<html lang="ps">
+<head>
+  <meta charset="UTF-8" />
+  <title>Haqqani Video Upload</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; direction: rtl; }
+    input, button { margin: 10px 0; display: block; }
+    #status { margin-top: 20px; color: green; }
+  </style>
+</head>
+<body>
+  <h2>ویډیو اپلوډ کړئ</h2>
+  <input type="file" id="videoFile" accept="video/*" />
+  <input type="text" id="title" placeholder="د ویډیو نوم ولیکئ" />
+  <button onclick="uploadToArchive()">اپلوډ کړئ</button>
+  <div id="status"></div>
+
+  <script>
+    async function uploadToArchive() {
+      const fileInput = document.getElementById('videoFile');
+      const titleInput = document.getElementById('title');
+      const statusDiv = document.getElementById('status');
+
+      if (!fileInput.files.length || !titleInput.value) {
+        alert('ویډیو او عنوان ضروري دي');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('video', fileInput.files[0]);
+      formData.append('title', titleInput.value);
+
+      statusDiv.innerText = 'ویډیو اپلوډ کېږي...';
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        statusDiv.innerHTML = `ویډیو اپلوډ شوه! <br> لینک: <a href=\"${result.url}\" target=\"_blank\">${result.url}</a>`;
+      } else {
+        statusDiv.innerText = `خطا: ${result.error}`;
+      }
+    }
+  </script>
+</body>
+</html>
