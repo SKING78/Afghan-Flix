@@ -1,14 +1,8 @@
-// File: api/upload.js
-
 import formidable from 'formidable';
 import fs from 'fs';
 import aws from 'aws-sdk';
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
+export const config = { api: { bodyParser: false } };
 
 const handler = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Only POST allowed' });
@@ -23,7 +17,6 @@ const handler = async (req, res) => {
     const fileStream = fs.createReadStream(file.filepath);
     const key = `haqqani_${Date.now()}_${file.originalFilename}`;
 
-    // Archive.org S3-compatible setup
     const s3 = new aws.S3({
       endpoint: 'https://s3.us.archive.org',
       accessKeyId: 'FW7x4cknX0iMBDN1',
@@ -34,7 +27,7 @@ const handler = async (req, res) => {
 
     try {
       await s3.putObject({
-        Bucket: 'haqqanijan30', // ستا Archive username
+        Bucket: 'haqqanijan30',
         Key: key,
         Body: fileStream,
         ACL: 'public-read',
