@@ -12,15 +12,15 @@ const handler = async (req, res) => {
     if (err) return res.status(500).json({ error: 'Form parsing error' });
 
     const file = files.video;
-    const rawTitle = fields.title || 'haqqani-video';
+    const rawTitle = fields.title || 'test-video';
     const title = rawTitle.replace(/[^a-zA-Z0-9_\u0600-\u06FF\s-]/g, '').trim();
     const fileStream = fs.createReadStream(file.filepath);
-    const key = `haqqani_${Date.now()}_${file.originalFilename}`;
+    const key = `test_${Date.now()}_${file.originalFilename}`;
 
     const s3 = new aws.S3({
       endpoint: 'https://s3.us.archive.org',
-      accessKeyId: '0vCzcsZnw66syt5T',
-      secretAccessKey: 'p5sENI5AOvPTBlZZ',
+      accessKeyId: 'Syr5KPkCuDcLFn0X',
+      secretAccessKey: 'SuvlME9lmlit1nXs',
       region: 'us-east-1',
       signatureVersion: 'v4'
     });
