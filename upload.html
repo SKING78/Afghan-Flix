@@ -2,48 +2,50 @@
 <html lang="ps">
 <head>
   <meta charset="UTF-8" />
-  <title>Haqqani Video Upload</title>
+  <title>Simple Uploader</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; direction: rtl; }
+    body { font-family: Arial; padding: 20px; direction: rtl; }
     input, button { margin: 10px 0; display: block; }
     #status { margin-top: 20px; color: green; }
   </style>
 </head>
 <body>
-  <h2>ویډیو اپلوډ کړئ</h2>
+  <h2>ساده ویډیو اپلوډ</h2>
   <input type="file" id="videoFile" accept="video/*" />
   <input type="text" id="title" placeholder="د ویډیو نوم ولیکئ" />
-  <button onclick="uploadToArchive()">اپلوډ کړئ</button>
+  <button onclick="uploadSimple()">اپلوډ کړئ</button>
   <div id="status"></div>
 
   <script>
-    async function uploadToArchive() {
-      const fileInput = document.getElementById('videoFile');
-      const titleInput = document.getElementById('title');
-      const statusDiv = document.getElementById('status');
+    async function uploadSimple() {
+      const file = document.getElementById('videoFile').files[0];
+      const title = document.getElementById('title').value.trim();
+      const status = document.getElementById('status');
 
-      if (!fileInput.files.length || !titleInput.value) {
-        alert('ویډیو او عنوان ضروري دي');
+      if (!file || !title) {
+        alert('عنوان او ویډیو ضروري دي!');
         return;
       }
 
       const formData = new FormData();
-      formData.append('video', fileInput.files[0]);
-      formData.append('title', titleInput.value);
+      formData.append('video', file);
+      formData.append('title', title);
 
-      statusDiv.innerText = 'ویډیو اپلوډ کېږي...';
+      status.innerText = 'اپلوډ روان دی...';
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        statusDiv.innerHTML = `ویډیو اپلوډ شوه! <br> لینک: <a href="${result.url}" target="_blank">${result.url}</a>`;
-      } else {
-        statusDiv.innerText = `خطا: ${result.error}`;
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await res.json();
+        if (res.ok) {
+          status.innerHTML = `اپلوډ بشپړ شو: <a href="${result.url}" target="_blank">${result.url}</a>`;
+        } else {
+          status.innerText = 'خطا: ' + result.error;
+        }
+      } catch (e) {
+        status.innerText = 'سرور سره ستونزه: ' + e.message;
       }
     }
   </script>
