@@ -19,8 +19,8 @@ const handler = async (req, res) => {
 
     const s3 = new aws.S3({
       endpoint: 'https://s3.us.archive.org',
-      accessKeyId: 'FW7x4cknX0iMBDN1',
-      secretAccessKey: 'V3PWWvXdWlylUGa0',
+      accessKeyId: 'spe77ikKMgxGUZ52',
+      secretAccessKey: 'HQI6k6APNFx9MJM9',
       region: 'us-east-1',
       signatureVersion: 'v4'
     });
