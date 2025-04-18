@@ -1,47 +1,59 @@
-// pages/api/upload.js
-import { S3 } from 'aws-sdk';
-import formidable from 'formidable';
-import fs from 'fs';
+import { useState } from 'react';
 
-export const config = { api: { bodyParser: false } };
+export default function Home() {
+  const [file, setFile] = useState(null);
+  const [url, setUrl] = useState('');
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
-
-  const form = new formidable.IncomingForm();
-  form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).json({ error: err.message });
-
-    const file = files.file;
-    const stream = fs.createReadStream(file.filepath);
-
-    const s3 = new S3({
-      endpoint: 'https://s3.us.archive.org',
-      accessKeyId: process.env.ARCHIVE_ACCESS_KEY,
-      secretAccessKey: process.env.ARCHIVE_SECRET_KEY,
-      signatureVersion: 'v4',
-      s3ForcePathStyle: true
-    });
-
-    const identifier = `video_${Date.now()}`;
+  const uploadVideo = async () => {
+    if (!file) {
+      alert('لطفاً لومړی یو فایل انتخاب کړئ');
+      return;
+    }
+    const form = new FormData();
+    form.append('file', file);
 
     try {
-      await s3.createBucket({ Bucket: identifier }).promise();
-      await s3.upload({
-        Bucket: identifier,
-        Key: file.originalFilename,
-        Body: stream,
-        ACL: 'public-read',
-        ContentType: file.mimetype
-      }).promise();
-
-      const url = `https://archive.org/download/${identifier}/${file.originalFilename}`;
-      res.status(200).json({ url });
-    } catch (uploadErr) {
-      res.status(500).json({ error: uploadErr.message });
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: form
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      setUrl(data.url);
+    } catch (err) {
+      alert('اپلوډ کې ستونزه: ' + err.message);
     }
-  });
+  };
+
+  return (
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-2xl mb-4">فلم اپلوډ کړئ</h1>
+      <input
+        type="file"
+        accept="video/*"
+        onChange={e => setFile(e.target.files[0])}
+        className="border p-2 w-full"
+      />
+      <button
+        onClick={uploadVideo}
+        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        اپلوډ
+      </button>
+
+      {url && (
+        <div className="mt-4">
+          <p>اپلوډ بشپړ شو! لینک:</p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-500 break-all"
+          >
+            {url}
+          </a>
+        </div>
+      )}
+    </div>
+  );
 }
