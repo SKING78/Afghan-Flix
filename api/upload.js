@@ -19,15 +19,15 @@ const handler = async (req, res) => {
 
     const s3 = new aws.S3({
       endpoint: 'https://s3.us.archive.org',
-      accessKeyId: 'spe77ikKMgxGUZ52',
-      secretAccessKey: 'HQI6k6APNFx9MJM9',
+      accessKeyId: '0vCzcsZnw66syt5T',
+      secretAccessKey: 'p5sENI5AOvPTBlZZ',
       region: 'us-east-1',
       signatureVersion: 'v4'
     });
 
     try {
       await s3.putObject({
-        Bucket: 'haqqanijan30',
+        Bucket: 'haqanijan30',
         Key: key,
         Body: fileStream,
         ACL: 'public-read',
