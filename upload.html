@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ps">
+<head>
+  <meta charset="UTF-8">
+  <title>Afghan Flix - ویډیو اپلوډ</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; direction: rtl; padding: 20px; }
+    input, button { margin-top: 10px; display: block; }
+    #status { margin-top: 20px; color: green; }
+  </style>
+</head>
+<body>
+  <h2>خپله ویډیو یوټیوب ته اپلوډ کړئ</h2>
+  <input type="file" id="videoFile" accept="video/*">
+  <input type="text" id="title" placeholder="د ویډیو سرلیک ولیکئ">
+  <button onclick="upload()">اپلوډ کړئ</button>
+  <div id="status"></div>
+
+  <script>
+    async function upload() {
+      const file = document.getElementById('videoFile').files[0];
+      const title = document.getElementById('title').value.trim();
+      const status = document.getElementById('status');
+      if (!file || !title) return alert('ویډیو او سرلیک ضروري دي!');
+
+      const formData = new FormData();
+      formData.append('video', file);
+      formData.append('title', title);
+
+      status.innerText = 'اپلوډ روان دی...';
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        status.innerHTML = `اپلوډ بشپړ شو: <a href="${data.url}" target="_blank">${data.url}</a>`;
+      } else {
+        status.innerText = 'خطا: ' + data.error;
+      }
+    }
+  </script>
+</body>
+</html>
