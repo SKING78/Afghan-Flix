@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a148c;  /* بنفش رنګ */
+            --primary-color: #4a148c;
             --secondary-color: #7b1fa2;
-            --accent-color: #e91e63;   /* ګلابي رنګ */
+            --accent-color: #e91e63;
             --danger-color: #f44336;
-            --dark-color: #1a237e;    /* تور نیلي */
-            --light-color: #f3e5f5;    /* روڼ بنفش */
+            --dark-color: #1a237e;
+            --light-color: #f3e5f5;
             --text-color: #212121;
             --text-light: #757575;
             --white: #ffffff;
+            --black: #000000;
             --shadow: 0 2px 5px rgba(0,0,0,0.1);
             --gradient: linear-gradient(135deg, #4a148c 0%, #e91e63 100%);
         }
@@ -31,6 +32,14 @@
             background-color: var(--light-color);
             color: var(--text-color);
             line-height: 1.6;
+        }
+        
+        body.dark-mode {
+            background-color: var(--black);
+            color: var(--white);
+            --light-color: #121212;
+            --white: #1e1e1e;
+            --text-color: #f5f5f5;
         }
         
         /* نويټیشن بار */
@@ -78,9 +87,9 @@
             background-color: #000;
         }
         
-        .video-player {
+        #youtube-player {
             width: 100%;
-            display: block;
+            height: 360px;
         }
         
         /* ویډیو کنټرولونه */
@@ -144,23 +153,6 @@
             color: var(--text-color);
         }
         
-        /* کیفیت انتخاب */
-        .quality-selector {
-            padding: 10px 15px;
-            background-color: var(--white);
-            margin-bottom: 10px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
-        
-        select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: var(--light-color);
-        }
-        
         /* اړونده ویډیوګانې */
         .related-videos {
             padding: 15px;
@@ -221,26 +213,6 @@
             font-size: 12px;
         }
         
-        .video-item-info {
-            flex-grow: 1;
-        }
-        
-        .video-item-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            color: var(--dark-color);
-        }
-        
-        .video-item-meta {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-        
         /* تب بار */
         .tab-bar {
             position: fixed;
@@ -272,19 +244,6 @@
         .tab-btn.active {
             color: var(--primary-color);
             transform: translateY(-5px);
-        }
-        
-        /* آفلاین حالت */
-        .offline-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: var(--danger-color);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            z-index: 10;
         }
         
         /* لودر */
@@ -393,6 +352,83 @@
             margin-top: 15px;
             color: var(--primary-color);
         }
+        
+        /* د آر ډارک موډ تڼۍ */
+        .theme-toggle {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: var(--gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 99;
+        }
+        
+        /* د ویډیو اپلوډ حالت */
+        .upload-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .upload-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .upload-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* سرچ بار */
+        .search-bar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background-color: var(--white);
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 99;
+            display: none;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+        
+        /* اډمین کنټرولونه */
+        .admin-controls {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .admin-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        
+        .admin-only {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -400,10 +436,15 @@
     <div class="nav-container">
         <div class="logo">Afghan Flix</div>
         <div class="nav-icons">
-            <i class="fas fa-search" onclick="showSearch()"></i>
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
             <i class="fas fa-user-circle" onclick="showPage('profile-page')"></i>
-            <i class="fas fa-upload" onclick="showPage('upload-page')"></i>
+            <i class="fas fa-upload admin-only" id="upload-icon" onclick="showPage('upload-page')"></i>
         </div>
+    </div>
+    
+    <!-- سرچ بار -->
+    <div class="search-bar" id="searchBar">
+        <input type="text" id="searchInput" placeholder="په Afghan Flix کې لټون...">
     </div>
     
     <!-- اصلی کونټینر -->
@@ -412,11 +453,7 @@
         <div class="page active" id="home-page">
             <!-- ویډیو پلیئر -->
             <div class="video-container">
-                <div class="offline-badge" id="offline-badge">آفلاین</div>
-                <video class="video-player" id="videoPlayer" controls poster="https://archive.org/download/afghan-flix-thumbnails/default-thumbnail.jpg">
-                    <source src="https://archive.org/download/afghan-flix-001/pashtun_history_pt1.mp4" type="video/mp4">
-                    ستاسو براؤزر ویډیو نه ملاتړوي.
-                </video>
+                <div id="youtube-player"></div>
             </div>
             
             <!-- ویډیو کنټرولونه -->
@@ -449,16 +486,6 @@
                 <div class="video-desc" id="video-desc">د پښتنو د تاریخ په اړه مستند فلم چې د پښتنو د تاریخي پېښو او شخصیتونو په اړه معلومات وړاندې کوي.</div>
             </div>
             
-            <!-- کیفیت انتخاب -->
-            <div class="quality-selector">
-                <select id="qualitySelect">
-                    <option value="auto">اتومات کیفیت</option>
-                    <option value="1080">1080p (عالی)</option>
-                    <option value="720">720p (ښه)</option>
-                    <option value="480">480p (منځنی)</option>
-                </select>
-            </div>
-            
             <!-- اړونده ویډیوګانې -->
             <div class="related-videos">
                 <div class="section-title">
@@ -466,7 +493,7 @@
                     <a href="#" style="color: var(--primary-color); font-size: 14px;">ټولې وګورئ</a>
                 </div>
                 
-                <div class="video-item" onclick="loadVideo(1)">
+                <div class="video-item" onclick="loadVideo('dQw4w9WgXcQ', 'د پښتنو تاریخ - دوهمه برخه', 'د پښتنو د تاریخ دوهم برخه')">
                     <div class="video-thumb">
                         <img src="https://archive.org/download/afghan-flix-thumbnails/pashtun-history-pt2.jpg" alt="Video Thumbnail">
                         <span class="duration">10:25</span>
@@ -477,7 +504,7 @@
                     </div>
                 </div>
                 
-                <div class="video-item" onclick="loadVideo(2)">
+                <div class="video-item" onclick="loadVideo('9bZkp7q19f0', 'پښتنو مشهور شخصیتونه', 'د پښتنو مشهور شخصیتونه')">
                     <div class="video-thumb">
                         <img src="https://archive.org/download/afghan-flix-thumbnails/pashtun-figures.jpg" alt="Video Thumbnail">
                         <span class="duration">15:40</span>
@@ -490,81 +517,8 @@
             </div>
         </div>
         
-        <!-- اکتشاف پاڼه -->
-        <div class="page" id="explore-page">
-            <div class="related-videos" style="margin-top: 15px;">
-                <div class="section-title">نوي ویډیوګانې</div>
-                
-                <div class="video-item" onclick="loadVideo(3)">
-                    <div class="video-thumb">
-                        <img src="https://archive.org/download/afghan-flix-thumbnails/afg-nature.jpg" alt="Video Thumbnail">
-                        <span class="duration">12:30</span>
-                    </div>
-                    <div class="video-item-info">
-                        <div class="video-item-title">د افغانستان طبیعي ښکلا</div>
-                        <div class="video-item-meta">Nature AFG • 15K لیدنې • 3 ورځې وړاندې</div>
-                    </div>
-                </div>
-                
-                <div class="video-item" onclick="loadVideo(4)">
-                    <div class="video-thumb">
-                        <img src="https://archive.org/download/afghan-flix-thumbnails/kabul-historical.jpg" alt="Video Thumbnail">
-                        <span class="duration">22:15</span>
-                    </div>
-                    <div class="video-item-info">
-                        <div class="video-item-title">د کابل تاریخي ځایونه</div>
-                        <div class="video-item-meta">Kabul History • 7.3K لیدنې • 5 ورځې وړاندې</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="related-videos" style="margin-top: 20px;">
-                <div class="section-title">ترټولو ډیدلي ویډیوګانې</div>
-                
-                <div class="video-item" onclick="loadVideo(5)">
-                    <div class="video-thumb">
-                        <img src="https://archive.org/download/afghan-flix-thumbnails/afg-war-history.jpg" alt="Video Thumbnail">
-                        <span class="duration">45:20</span>
-                    </div>
-                    <div class="video-item-info">
-                        <div class="video-item-title">د افغانستان د جګړې تاریخ</div>
-                        <div class="video-item-meta">AFG History • 150K لیدنې • 1 میاشت وړاندې</div>
-                    </div>
-                </div>
-                
-                <div class="video-item" onclick="loadVideo(6)">
-                    <div class="video-thumb">
-                        <img src="https://archive.org/download/afghan-flix-thumbnails/pashtun-tribal.jpg" alt="Video Thumbnail">
-                        <span class="duration">32:10</span>
-                    </div>
-                    <div class="video-item-info">
-                        <div class="video-item-title">د پښتنو قبایلي نظام</div>
-                        <div class="video-item-meta">Tribal System • 98K لیدنې • 2 میاشتې وړاندې</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ډاونلوډ پاڼه -->
-        <div class="page" id="downloads-page">
-            <div class="related-videos" style="margin-top: 15px;">
-                <div class="section-title">ستاسو ډاونلوډ شوي ویډیوګانې</div>
-                
-                <div class="video-item" onclick="playDownloaded(1)">
-                    <div class="video-thumb">
-                        <img src="https://archive.org/download/afghan-flix-thumbnails/pashtun-history-pt1.jpg" alt="Video Thumbnail">
-                        <span class="duration">10:25</span>
-                    </div>
-                    <div class="video-item-info">
-                        <div class="video-item-title">د پښتنو تاریخ - لومړی برخه</div>
-                        <div class="video-item-meta">ډاونلوډ شوی • 250MB • 480p</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- اپلوډ پاڼه -->
-        <div class="page" id="upload-page">
+        <!-- اپلوډ پاڼه (یوازې د اډمینانو لپاره) -->
+        <div class="page admin-only" id="upload-page">
             <div class="upload-form">
                 <h2 style="text-align: center; margin-bottom: 20px; color: var(--dark-color);">نوی ویډیو اپلوډ کړئ</h2>
                 
@@ -581,10 +535,10 @@
                 <div class="form-group">
                     <label for="video-category">کټګوري</label>
                     <select id="video-category">
-                        <option value="documentary">مستند</option>
-                        <option value="history">تاریخ</option>
-                        <option value="culture">کلتور</option>
-                        <option value="music">موسیقي</option>
+                        <option value="22">مستند</option>
+                        <option value="27">تاریخ</option>
+                        <option value="25">کلتور</option>
+                        <option value="10">موسیقي</option>
                     </select>
                 </div>
                 
@@ -598,6 +552,8 @@
                     <input type="file" id="video-thumbnail" accept="image/*">
                 </div>
                 
+                <div id="upload-status" class="upload-status"></div>
+                
                 <button class="upload-btn" onclick="uploadVideo()">
                     <i class="fas fa-upload"></i> اپلوډ کړئ
                 </button>
@@ -608,35 +564,51 @@
         <div class="page" id="profile-page">
             <div class="video-info" style="margin-top: 15px; text-align: center;">
                 <div style="width: 100px; height: 100px; border-radius: 50%; background-color: #eee; margin: 0 auto 15px; overflow: hidden;">
-                    <img src="https://archive.org/download/afghan-flix-thumbnails/default-profile.jpg" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="https://archive.org/download/afghan-flix-thumbnails/default-profile.jpg" alt="Profile" id="profile-image" style="width: 100%; height: 100%; object-fit: cover;">
+                    <input type="file" id="profile-image-input" accept="image/*" style="display: none;" onchange="updateProfileImage()">
                 </div>
                 <div class="video-title" id="user-name">ستاسو نوم</div>
-                <div class="video-desc">کارونکی</div>
+                <div class="video-desc" id="user-email">کارونکی</div>
             </div>
             
             <div class="related-videos">
                 <div class="section-title">ستاسو تنظیمات</div>
                 
-                <div class="video-item" style="padding: 12px 15px;" onclick="showSettings()">
+                <div class="video-item" style="padding: 12px 15px;" onclick="toggleDarkMode()">
                     <div class="video-item-info">
-                        <div class="video-item-title">اپلیکیشن تنظیمات</div>
+                        <div class="video-item-title">د آر ډارک موډ</div>
                     </div>
-                    <i class="fas fa-chevron-left" style="color: var(--text-light);"></i>
+                    <i class="fas fa-moon" id="theme-icon" style="color: var(--text-light);"></i>
                 </div>
                 
-                <div class="video-item" style="padding: 12px 15px;" onclick="showLanguage()">
+                <div class="video-item" style="padding: 12px 15px;" onclick="changeLanguage()">
                     <div class="video-item-info">
                         <div class="video-item-title">ژبه بدلول</div>
                     </div>
-                    <i class="fas fa-chevron-left" style="color: var(--text-light);"></i>
+                    <i class="fas fa-language" style="color: var(--text-light);"></i>
                 </div>
                 
-                <div class="video-item" style="padding: 12px 15px;" onclick="showStorage()">
+                <div class="video-item" style="padding: 12px 15px;" onclick="manageStorage()">
                     <div class="video-item-info">
                         <div class="video-item-title">د ذخیرې مدیریت</div>
                     </div>
-                    <i class="fas fa-chevron-left" style="color: var(--text-light);"></i>
+                    <i class="fas fa-database" style="color: var(--text-light);"></i>
                 </div>
+            </div>
+            
+            <!-- اډمین کنټرولونه (یوازې د اډمینانو لپاره) -->
+            <div id="admin-controls" class="admin-controls" style="display: none;">
+                <div class="section-title">اډمین کنټرولونه</div>
+                
+                <button class="admin-btn" onclick="showUserManagement()">
+                    <i class="fas fa-users-cog"></i> د کارونکو مدیریت
+                </button>
+                <button class="admin-btn" onclick="showVideoManagement()">
+                    <i class="fas fa-video"></i> د ویډیوګانو مدیریت
+                </button>
+                <button class="admin-btn" onclick="createLimitedAdmin()">
+                    <i class="fas fa-user-shield"></i> محدود اډمین جوړول
+                </button>
             </div>
             
             <div class="related-videos" style="margin-top: 20px;">
@@ -646,14 +618,21 @@
                     <div class="video-item-info">
                         <div class="video-item-title">مرسته او پوښتنې</div>
                     </div>
-                    <i class="fas fa-chevron-left" style="color: var(--text-light);"></i>
+                    <i class="fas fa-question-circle" style="color: var(--text-light);"></i>
+                </div>
+                
+                <div class="video-item" style="padding: 12px 15px;" onclick="contactUs()">
+                    <div class="video-item-info">
+                        <div class="video-item-title">زموږ سره اړیکه</div>
+                    </div>
+                    <i class="fas fa-envelope" style="color: var(--text-light);"></i>
                 </div>
                 
                 <div class="video-item" style="padding: 12px 15px; color: var(--danger-color);" onclick="logout()">
                     <div class="video-item-info">
                         <div class="video-item-title">وتل</div>
                     </div>
-                    <i class="fas fa-chevron-left" style="color: var(--danger-color);"></i>
+                    <i class="fas fa-sign-out-alt" style="color: var(--danger-color);"></i>
                 </div>
             </div>
         </div>
@@ -665,12 +644,12 @@
                 
                 <div class="form-group">
                     <label for="login-email">برېښنالیک</label>
-                    <input type="email" id="login-email" placeholder="ستاسو برېښنالیک ولیکئ">
+                    <input type="email" id="login-email" placeholder="ستاسو برېښنالیک ولیکئ" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="login-password">پاسورډ</label>
-                    <input type="password" id="login-password" placeholder="ستاسو پاسورډ ولیکئ">
+                    <input type="password" id="login-password" placeholder="ستاسو پاسورډ ولیکئ" required>
                 </div>
                 
                 <button class="auth-btn" onclick="login()">
@@ -690,22 +669,22 @@
                 
                 <div class="form-group">
                     <label for="register-name">نوم</label>
-                    <input type="text" id="register-name" placeholder="ستاسو نوم ولیکئ">
+                    <input type="text" id="register-name" placeholder="ستاسو نوم ولیکئ" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="register-email">برېښنالیک</label>
-                    <input type="email" id="register-email" placeholder="ستاسو برېښنالیک ولیکئ">
+                    <input type="email" id="register-email" placeholder="ستاسو برېښنالیک ولیکئ" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="register-password">پاسورډ</label>
-                    <input type="password" id="register-password" placeholder="پاسورډ ولیکئ">
+                    <input type="password" id="register-password" placeholder="پاسورډ ولیکئ" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="register-confirm">پاسورډ تایید کړئ</label>
-                    <input type="password" id="register-confirm" placeholder="پاسورډ بیا ولیکئ">
+                    <input type="password" id="register-confirm" placeholder="پاسورډ بیا ولیکئ" required>
                 </div>
                 
                 <button class="auth-btn" onclick="register()">
@@ -714,6 +693,38 @@
                 
                 <div class="auth-link" onclick="showPage('login-page')">
                     دمخه حساب لرئ؟ ننوتل
+                </div>
+            </div>
+        </div>
+        
+        <!-- د کارونکو مدیریت پاڼه (یوازې د اډمینانو لپاره) -->
+        <div class="page admin-only" id="users-page">
+            <div class="related-videos">
+                <div class="section-title">
+                    <span>د کارونکو مدیریت</span>
+                    <button class="admin-btn" onclick="showPage('profile-page')">
+                        <i class="fas fa-arrow-left"></i> بیرته
+                    </button>
+                </div>
+                
+                <div id="users-list">
+                    <!-- دلته کارونکی به په JavaScript کې اضافه شي -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- د ویډیوګانو مدیریت پاڼه (یوازې د اډمینانو لپاره) -->
+        <div class="page admin-only" id="videos-page">
+            <div class="related-videos">
+                <div class="section-title">
+                    <span>د ویډیوګانو مدیریت</span>
+                    <button class="admin-btn" onclick="showPage('profile-page')">
+                        <i class="fas fa-arrow-left"></i> بیرته
+                    </button>
+                </div>
+                
+                <div id="videos-list">
+                    <!-- دلته ویډیوګانې به په JavaScript کې اضافه شي -->
                 </div>
             </div>
         </div>
@@ -739,6 +750,11 @@
         </a>
     </div>
     
+    <!-- د آر ډارک موډ تڼۍ -->
+    <div class="theme-toggle" onclick="toggleDarkMode()">
+        <i class="fas fa-moon" id="theme-toggle-icon"></i>
+    </div>
+    
     <!-- لودر -->
     <div class="loader" id="loader">
         <div class="loader-content">
@@ -749,115 +765,87 @@
         </div>
     </div>
     
-    <!-- د ویډیو ډیټابیس -->
+    <!-- د فایر بیز SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    
+    <!-- د یوټیوب API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
     <script>
-        // د archive.org سره د اتصال تنظیمات
-        const archiveOrgConfig = {
-            accessKey: "FW7x4cknX0iMBDN1",
-            secretKey: "V3PWWvXdWlylUGa0",
-            endpoint: "s3.us.archive.org",
-            bucket: "afghan-flix-videos"
-        };
-
         // د فایر بیز تنظیمات
         const firebaseConfig = {
             apiKey: "AIzaSyDzWtVoR3UXOYo6zBP21zWVflvQKIM3R04",
             authDomain: "afghan-flix.firebaseapp.com",
             projectId: "afghan-flix",
             storageBucket: "afghan-flix.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            messagingSenderId: "705875266433",
+            appId: "1:705875266433:web:3a8f5d8f8d8f8d8f8d8f8"
         };
 
-        // د ویډیو ډیټابیس
-        const videos = [
-            {
-                id: 1,
-                title: "د پښتنو تاریخ - لومړی برخه",
-                desc: "د پښتنو د تاریخ په اړه مستند فلم",
-                url: "https://archive.org/download/afghan-flix-001/pashtun_history_pt1.mp4",
-                thumbnail: "https://archive.org/download/afghan-flix-thumbnails/pashtun-history-pt1.jpg",
-                views: "1.2K",
-                date: "2 ورځې وړاندې",
-                duration: "10:25",
-                category: "history",
-                downloaded: true,
-                quality: "480p",
-                size: "250MB"
-            },
-            {
-                id: 2,
-                title: "د پښتنو تاریخ - دوهمه برخه",
-                desc: "د پښتنو د تاریخ دوهم برخه",
-                url: "https://archive.org/download/afghan-flix-002/pashtun_history_pt2.mp4",
-                thumbnail: "https://archive.org/download/afghan-flix-thumbnails/pashtun-history-pt2.jpg",
-                views: "5.2K",
-                date: "1 اونۍ وړاندې",
-                duration: "15:40",
-                category: "history",
-                downloaded: false
-            },
-            {
-                id: 3,
-                title: "د افغانستان طبیعي ښکلا",
-                desc: "د افغانستان د طبیعت ښکلا",
-                url: "https://archive.org/download/afghan-flix-003/afg_nature.mp4",
-                thumbnail: "https://archive.org/download/afghan-flix-thumbnails/afg-nature.jpg",
-                views: "15K",
-                date: "3 ورځې وړاندې",
-                duration: "12:30",
-                category: "documentary",
-                downloaded: false
-            },
-            {
-                id: 4,
-                title: "د کابل تاریخي ځایونه",
-                desc: "د کابل ښار تاریخي ځایونه",
-                url: "https://archive.org/download/afghan-flix-004/kabul_historical.mp4",
-                thumbnail: "https://archive.org/download/afghan-flix-thumbnails/kabul-historical.jpg",
-                views: "7.3K",
-                date: "5 ورځې وړاندې",
-                duration: "22:15",
-                category: "history",
-                downloaded: false
-            },
-            {
-                id: 5,
-                title: "د افغانستان د جګړې تاریخ",
-                desc: "د افغانستان په اړه د جګړو تاریخ",
-                url: "https://archive.org/download/afghan-flix-005/afg_war_history.mp4",
-                thumbnail: "https://archive.org/download/afghan-flix-thumbnails/afg-war-history.jpg",
-                views: "150K",
-                date: "1 میاشت وړاندې",
-                duration: "45:20",
-                category: "history",
-                downloaded: false
-            },
-            {
-                id: 6,
-                title: "د پښتنو قبایلي نظام",
-                desc: "د پښتنو د قبایلي نظام په اړه معلومات",
-                url: "https://archive.org/download/afghan-flix-006/pashtun_tribal.mp4",
-                thumbnail: "https://archive.org/download/afghan-flix-thumbnails/pashtun-tribal.jpg",
-                views: "98K",
-                date: "2 میاشتې وړاندې",
-                duration: "32:10",
-                category: "culture",
-                downloaded: false
-            }
-        ];
+        // فایر بیز پیلول
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
         
-        // د اپلیکیشن حالت
-        let currentVideoId = 1;
-        let isOnline = navigator.onLine;
-        let likedVideos = [1];
-        let savedVideos = [1];
-        let currentUser = null;
+        // د یوټیوب پلیئر
+        let player;
+        let currentVideoId = 'dQw4w9WgXcQ'; // Default video ID
+        
+        // د یوټیوب API چمتووالی
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '360',
+                width: '100%',
+                videoId: currentVideoId,
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 1,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'showinfo': 0,
+                    'iv_load_policy': 3
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        function onPlayerReady(event) {
+            console.log('YouTube player is ready');
+        }
+        
+        function onPlayerStateChange(event) {
+            // دلته کولی شئ د پلیئر حالت بدلون مدیریت کړئ
+        }
+        
+        // ویډیو پلی کول
+        function loadVideo(videoId, title, desc) {
+            currentVideoId = videoId;
+            
+            if (player) {
+                player.loadVideoById(videoId);
+                document.getElementById('video-title').textContent = title || 'د ویډیو عنوان';
+                document.getElementById('video-desc').textContent = desc || 'د ویډیو تفصیل';
+                
+                // Show loader
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader-text').textContent = "ویډیو پلی کېږي...";
+                
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                }, 1000);
+            }
+        }
         
         // د پاڼو مدیریت
         function showPage(pageId) {
-            // که چیرې کارونکی نه وي ننوتلی، پروفایل او اپلوډ پاڼې ته د تګ مخه ونیسئ
-            if ((pageId === 'profile-page' || pageId === 'upload-page') && !currentUser) {
+            if ((pageId === 'profile-page' || pageId === 'upload-page') && !auth.currentUser) {
                 showPage('login-page');
                 return;
             }
@@ -871,196 +859,62 @@
                 btn.classList.remove('active');
             });
             
-            // تب بار تڼۍ یوازې د اصلي پاڼو لپاره فعاله کړئ
             if (['home-page', 'explore-page', 'downloads-page', 'profile-page'].includes(pageId)) {
                 document.querySelector(`.tab-btn[onclick="showPage('${pageId}')"]`).classList.add('active');
             }
             
-            // Scroll to top
             window.scrollTo(0, 0);
         }
         
-        // ویډیو پلی کول
-        function loadVideo(videoId) {
-            const video = videos.find(v => v.id === videoId);
-            if (!video) return;
+        // د آر ډارک موډ بدلول
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('theme-icon');
+            const toggleIcon = document.getElementById('theme-toggle-icon');
             
-            currentVideoId = videoId;
-            
-            // Show loader
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').textContent = "ویډیو پلی کېږي...";
-            
-            // Update UI after short delay to simulate loading
-            setTimeout(() => {
-                document.getElementById('video-title').textContent = video.title;
-                document.getElementById('video-desc').textContent = video.desc;
-                
-                const videoPlayer = document.getElementById('videoPlayer');
-                if (isOnline) {
-                    videoPlayer.src = video.url;
-                    videoPlayer.poster = video.thumbnail;
-                    document.getElementById('offline-badge').style.display = 'none';
-                } else if (video.downloaded) {
-                    videoPlayer.src = video.offlineUrl || video.url;
-                    document.getElementById('offline-badge').style.display = 'block';
-                } else {
-                    alert('تاسو آفلاین یاست او دا ویډیو ستاسو په ډیوایس کې نه دی ذخیره شوی!');
-                    document.getElementById('loader').style.display = 'none';
-                    return;
-                }
-                
-                // Update like and save buttons
-                updateLikeButton();
-                updateSaveButton();
-                updateDownloadButton();
-                
-                videoPlayer.load();
-                videoPlayer.play();
-                
-                // Hide loader
-                document.getElementById('loader').style.display = 'none';
-                
-                // Scroll to top
-                window.scrollTo(0, 0);
-                
-                // کور پاڼه ښکاره کړئ
-                showPage('home-page');
-            }, 500);
-        }
-        
-        // ډاونلوډ شوي ویډیوګانې پلی کول
-        function playDownloaded(videoId) {
-            const video = videos.find(v => v.id === videoId);
-            if (!video || !video.downloaded) return;
-            
-            showPage('home-page');
-            loadVideo(videoId);
-        }
-        
-        // د لایک تڼۍ تازه کول
-        function updateLikeButton() {
-            const likeBtn = document.getElementById('likeBtn');
-            const isLiked = likedVideos.includes(currentVideoId);
-            
-            likeBtn.innerHTML = isLiked 
-                ? '<i class="fas fa-heart" style="color:red"></i> لایک شوی' 
-                : '<i class="far fa-heart"></i> لایک';
-        }
-        
-        // د خوندي تڼۍ تازه کول
-        function updateSaveButton() {
-            const saveBtn = document.getElementById('saveBtn');
-            const isSaved = savedVideos.includes(currentVideoId);
-            
-            saveBtn.innerHTML = isSaved 
-                ? '<i class="fas fa-bookmark" style="color:var(--primary-color)"></i> خوندي شوی' 
-                : '<i class="far fa-bookmark"></i> خوندي';
-        }
-        
-        // د ډاونلوډ تڼۍ تازه کول
-        function updateDownloadButton() {
-            const downloadBtn = document.getElementById('downloadBtn');
-            const video = videos.find(v => v.id === currentVideoId);
-            
-            if (video.downloaded) {
-                downloadBtn.innerHTML = '<i class="fas fa-check-circle"></i> ډاونلوډ شوی';
-                downloadBtn.disabled = true;
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fas fa-sun';
+                toggleIcon.className = 'fas fa-sun';
             } else {
-                downloadBtn.innerHTML = '<i class="fas fa-download"></i> ډاونلوډ';
-                downloadBtn.disabled = false;
+                icon.className = 'fas fa-moon';
+                toggleIcon.className = 'fas fa-moon';
             }
         }
         
-        // د لایک تڼۍ فعالیت
-        document.getElementById('likeBtn').addEventListener('click', function() {
-            if (!currentUser) {
-                showPage('login-page');
-                return;
-            }
+        // د سرچ بار ښکاره/پټول
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            searchBar.style.display = searchBar.style.display === 'block' ? 'none' : 'block';
             
-            const index = likedVideos.indexOf(currentVideoId);
-            if (index === -1) {
-                likedVideos.push(currentVideoId);
-            } else {
-                likedVideos.splice(index, 1);
+            if (searchBar.style.display === 'block') {
+                document.getElementById('searchInput').focus();
             }
-            updateLikeButton();
-        });
+        }
         
-        // د خوندي تڼۍ فعالیت
-        document.getElementById('saveBtn').addEventListener('click', function() {
-            if (!currentUser) {
-                showPage('login-page');
-                return;
-            }
-            
-            const index = savedVideos.indexOf(currentVideoId);
-            if (index === -1) {
-                savedVideos.push(currentVideoId);
-            } else {
-                savedVideos.splice(index, 1);
-            }
-            updateSaveButton();
-        });
-        
-        // د ډاونلوډ تڼۍ فعالیت
-        document.getElementById('downloadBtn').addEventListener('click', function() {
-            if (!currentUser) {
-                showPage('login-page');
-                return;
-            }
-            
-            if (!isOnline) {
-                alert('تاسو اوس آفلاین یاست! د ویډیو ډاونلوډ لپاره آنلاین شی.');
-                return;
-            }
-            
-            const video = videos.find(v => v.id === currentVideoId);
-            if (!video) return;
-            
-            // Show loader
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').textContent = "ویډیو ډاونلوډیږي...";
-            
-            // Simulate download
-            setTimeout(() => {
-                video.downloaded = true;
-                video.offlineUrl = video.url; // په حقیقت کې به دا د localStorage یا IndexDB څخه وی
-                updateDownloadButton();
-                alert(`ویډیو په بریالیتوب سره ډاونلوډ شو! (${video.size || '250MB'})`);
-                document.getElementById('loader').style.display = 'none';
-                
-                // Refresh downloads page if active
-                if (document.getElementById('downloads-page').classList.contains('active')) {
-                    showPage('downloads-page');
-                }
-            }, 1500);
-        });
-        
-        // د شریکولو تڼۍ فعالیت
-        document.getElementById('shareBtn').addEventListener('click', function() {
-            const video = videos.find(v => v.id === currentVideoId);
-            if (!video) return;
-            
-            alert(`د "${video.title}" ویډیو لینک په کلیپ بورډ کې کاپي شو!\n\n${video.url}`);
-        });
-        
-        // د کیفیت انتخاب فعالیت
-        document.getElementById('qualitySelect').addEventListener('change', function() {
-            alert(`کیفیت ${this.value} ته بدل شو!`);
-        });
-        
-        // د ویډیو اپلوډ فعالیت
+        // د ویډیو اپلوډ (یوازې د اډمینانو لپاره)
         async function uploadVideo() {
+            const user = auth.currentUser;
+            if (!user) {
+                showUploadStatus('د اپلوډ لپاره لومړی ننوتل ضروري دی!', 'error');
+                showPage('login-page');
+                return;
+            }
+            
+            // د اډمین چیک
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.exists || (!userDoc.data().isAdmin && !userDoc.data().isLimitedAdmin)) {
+                showUploadStatus('یوازې اډمینان کولی شي ویډیوګانې اپلوډ کړي!', 'error');
+                return;
+            }
+            
             const title = document.getElementById('video-title-input').value;
-            const desc = document.getElementById('video-desc-input').value;
-            const category = document.getElementById('video-category').value;
+            const description = document.getElementById('video-desc-input').value;
+            const categoryId = document.getElementById('video-category').value;
             const videoFile = document.getElementById('video-file').files[0];
             const thumbnailFile = document.getElementById('video-thumbnail').files[0];
             
-            if (!title || !desc || !videoFile) {
-                alert('مهرباني وکړئ ټول اړین معلومات ولیکئ او ویډیو فایل وټاکئ!');
+            if (!title || !description || !videoFile) {
+                showUploadStatus('مهرباني وکړئ ټول اړین معلومات ولیکئ او ویډیو فایل وټاکئ!', 'error');
                 return;
             }
             
@@ -1069,41 +923,69 @@
             document.getElementById('loader-text').textContent = "ویډیو اپلوډیږي...";
             
             try {
-                // دلته به د archive.org S3 API کاروو
-                // const uploadResult = await uploadToArchiveOrg(videoFile, thumbnailFile, title, desc, category);
+                // په فایر بیز کې د ویډیو میټاډیټا ذخیره کول
+                const videoData = {
+                    title: title,
+                    description: description,
+                    categoryId: categoryId,
+                    uploader: user.uid,
+                    uploaderName: user.displayName || user.email,
+                    uploadDate: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'uploading',
+                    views: 0,
+                    likes: 0
+                };
                 
-                setTimeout(() => {
-                    // د نوي ویډیو اضافه کول
-                    const newVideo = {
-                        id: videos.length + 1,
-                        title: title,
-                        desc: desc,
-                        url: `https://archive.org/download/afghan-flix-${videos.length + 1}/${videoFile.name}`,
-                        thumbnail: thumbnailFile ? `https://archive.org/download/afghan-flix-thumbnails/${thumbnailFile.name}` : 'https://archive.org/download/afghan-flix-thumbnails/default-thumbnail.jpg',
-                        views: "0",
-                        date: "اوس مهال",
-                        duration: "00:00",
-                        category: category
-                    };
-                    
-                    videos.push(newVideo);
-                    
-                    // فورم پاکول
-                    document.getElementById('video-title-input').value = '';
-                    document.getElementById('video-desc-input').value = '';
-                    document.getElementById('video-file').value = '';
-                    document.getElementById('video-thumbnail').value = '';
-                    
-                    document.getElementById('loader').style.display = 'none';
-                    alert("ستاسو ویډیو په بریالیتوب سره اپلوډ شو!");
-                    
-                    // اکتشاف پاڼې ته ولاړشئ
-                    showPage('explore-page');
-                }, 3000);
+                const videoRef = await db.collection('videos').add(videoData);
+                
+                // د ویډیو فایل ذخیره کول په Firebase Storage کې
+                const videoStorageRef = storage.ref(`videos/${videoRef.id}/${videoFile.name}`);
+                const videoUploadTask = videoStorageRef.put(videoFile);
+                
+                // د تھمب نیل فایل ذخیره کول که چیرې شتون ولري
+                let thumbnailUrl = '';
+                if (thumbnailFile) {
+                    const thumbnailStorageRef = storage.ref(`thumbnails/${videoRef.id}/${thumbnailFile.name}`);
+                    await thumbnailStorageRef.put(thumbnailFile);
+                    thumbnailUrl = await thumbnailStorageRef.getDownloadURL();
+                }
+                
+                // د ویډیو URL ترلاسه کول
+                const videoUrl = await videoStorageRef.getDownloadURL();
+                
+                // د ویډیو معلومات تازه کول
+                await videoRef.update({
+                    videoUrl: videoUrl,
+                    thumbnailUrl: thumbnailUrl || 'https://archive.org/download/afghan-flix-thumbnails/default-thumbnail.jpg',
+                    status: 'uploaded'
+                });
+                
+                // Success message
+                document.getElementById('loader').style.display = 'none';
+                showUploadStatus('ستاسو ویډیو په بریالیتوب سره اپلوډ شو!', 'success');
+                
+                // فورم پاکول
+                document.getElementById('video-title-input').value = '';
+                document.getElementById('video-desc-input').value = '';
+                document.getElementById('video-file').value = '';
+                document.getElementById('video-thumbnail').value = '';
+                
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
-                alert("د اپلوډ پر مهال ستونزه رامنځته شوه: " + error.message);
+                showUploadStatus(`د اپلوډ پر مهال ستونزه: ${error.message}`, 'error');
             }
+        }
+        
+        // د اپلوډ حالت ښودل
+        function showUploadStatus(message, type) {
+            const statusElement = document.getElementById('upload-status');
+            statusElement.textContent = message;
+            statusElement.className = `upload-status upload-${type}`;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
         }
         
         // د ننوتلو فعالیت
@@ -1116,35 +998,55 @@
                 return;
             }
             
-            // Show loader
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').textContent = "ننوتل کېږي...";
-            
             try {
-                // دلته به د فایر بیز auth کاروو
-                // const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                // Show loader
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader-text').textContent = "ننوتل کېږي...";
                 
-                setTimeout(() => {
-                    // د مثال لپاره:
-                    currentUser = {
-                        email: email,
-                        name: email.split('@')[0]
-                    };
-                    
-                    document.getElementById('user-name').textContent = currentUser.name;
-                    
-                    document.getElementById('login-email').value = '';
-                    document.getElementById('login-password').value = '';
-                    
-                    document.getElementById('loader').style.display = 'none';
-                    alert("په بریالیتوب سره ننوتل!");
-                    
-                    // پروفایل پاڼې ته ولاړشئ
-                    showPage('profile-page');
-                }, 1500);
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Check if email is verified
+                if (!user.emailVerified) {
+                    await auth.signOut();
+                    alert('لطفاً خپل بریښنالیک تایید کړئ!');
+                    return;
+                }
+                
+                // Get user data from Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const userData = userDoc.data();
+                
+                // Update UI
+                document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
+                document.getElementById('user-email').textContent = user.email;
+                
+                // Show admin controls if admin
+                if (userData.isAdmin || userData.isLimitedAdmin) {
+                    document.getElementById('admin-controls').style.display = 'block';
+                    document.querySelectorAll('.admin-only').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                    document.getElementById('upload-icon').style.display = 'inline-block';
+                }
+                
+                // Hide loader
+                document.getElementById('loader').style.display = 'none';
+                
+                // Redirect to profile
+                showPage('profile-page');
+                
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
-                alert("د ننوتلو پر مهال ستونزه: " + error.message);
+                
+                // Specific error messages
+                if (error.code === 'auth/user-not-found') {
+                    alert('کارونکی ونه موندل شو!');
+                } else if (error.code === 'auth/wrong-password') {
+                    alert('ناسم پاسورډ!');
+                } else {
+                    alert(`د ننوتلو تېروتنه: ${error.message}`);
+                }
             }
         }
         
@@ -1159,118 +1061,338 @@
                 alert('مهرباني وکړئ ټول اړین معلومات ولیکئ!');
                 return;
             }
-            
+
             if (password !== confirm) {
                 alert('پاسورډونه مطابقت نلري!');
                 return;
             }
-            
-            // Show loader
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').textContent = "حاسبه جوړیږي...";
-            
+
             try {
-                // دلته به د فایر بیز auth کاروو
-                // const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                // Show loader
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader-text').textContent = "حساب جوړیږي...";
                 
-                setTimeout(() => {
-                    // د مثال لپاره:
-                    currentUser = {
-                        email: email,
-                        name: name
-                    };
-                    
-                    document.getElementById('user-name').textContent = currentUser.name;
-                    
-                    document.getElementById('register-name').value = '';
-                    document.getElementById('register-email').value = '';
-                    document.getElementById('register-password').value = '';
-                    document.getElementById('register-confirm').value = '';
-                    
-                    document.getElementById('loader').style.display = 'none';
-                    alert("ستاسو حساب په بریالیتوب سره جوړ شو!");
-                    
-                    // پروفایل پاڼې ته ولاړشئ
-                    showPage('profile-page');
-                }, 1500);
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Send verification email
+                await user.sendEmailVerification();
+                
+                // Update user profile
+                await user.updateProfile({ displayName: name });
+                
+                // Add to Firestore
+                await db.collection('users').doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isAdmin: email === 'haqanijan30@gmail.com', // Only this email is admin
+                    isLimitedAdmin: false,
+                    isBlocked: false
+                });
+                
+                alert('په بریالیتوب سره حساب جوړ شو! لطفاً خپل بریښنالیک تایید کړئ.');
+                
+                // Clear form
+                document.getElementById('register-name').value = '';
+                document.getElementById('register-email').value = '';
+                document.getElementById('register-password').value = '';
+                document.getElementById('register-confirm').value = '';
+                
+                // Hide loader
+                document.getElementById('loader').style.display = 'none';
+                
+                // Go to login
+                showPage('login-page');
+                
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
-                alert("د ثبتولو پر مهال ستونزه: " + error.message);
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    alert('دا بریښنالیک دمخه کارول شوی دی!');
+                } else {
+                    alert(`د ثبتولو تېروتنه: ${error.message}`);
+                }
             }
         }
         
         // د وتلو فعالیت
         function logout() {
             if (confirm('آیا تاسو ډاډه یاست چې غواړئ له اپلیکیشن څخه ووځئ؟')) {
-                currentUser = null;
-                alert('ستاسو له اپلیکیشن څخه وتل.');
-                showPage('home-page');
+                auth.signOut().then(() => {
+                    document.getElementById('admin-controls').style.display = 'none';
+                    document.querySelectorAll('.admin-only').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    document.getElementById('upload-icon').style.display = 'none';
+                    showPage('home-page');
+                });
             }
         }
         
-        // د آنلاین/آفلاین حالت تشخیص
-        function updateConnectionStatus() {
-            isOnline = navigator.onLine;
-            const statusElement = document.getElementById('offline-badge');
+        // د پروفایل عکس تازه کول
+        function updateProfileImage() {
+            const file = document.getElementById('profile-image-input').files[0];
+            if (!file) return;
             
-            if (!isOnline) {
-                statusElement.style.display = 'block';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profile-image').src = e.target.result;
                 
-                // Check if current video is downloaded
-                const video = videos.find(v => v.id === currentVideoId);
-                if (video && !video.downloaded) {
-                    // Try to find first downloaded video
-                    const downloadedVideo = videos.find(v => v.downloaded);
-                    if (downloadedVideo) {
-                        loadVideo(downloadedVideo.id);
-                    }
+                // که چیرې کارونکی ننوتلی وي، عکس په Firebase کې ذخیره کړئ
+                if (auth.currentUser) {
+                    const storageRef = storage.ref(`profile_images/${auth.currentUser.uid}`);
+                    const uploadTask = storageRef.put(file);
+                    
+                    uploadTask.then(snapshot => {
+                        return snapshot.ref.getDownloadURL();
+                    }).then(downloadURL => {
+                        return auth.currentUser.updateProfile({
+                            photoURL: downloadURL
+                        });
+                    }).catch(error => {
+                        console.error('د عکس اپلوډ تېروتنه:', error);
+                    });
                 }
-            } else {
-                statusElement.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // د ژبې بدلول
+        function changeLanguage() {
+            alert('اوس مهال یوازې پښتو ژبه ملاتړیږي! بهرنۍ ژبې به راتلونکي کې اضافه شي.');
+        }
+        
+        // د ذخیرې مدیریت
+        function manageStorage() {
+            alert('د ذخیرې مدیریت به راتلونکي کې اضافه شي.');
+        }
+        
+        // مرسته او پوښتنې
+        function showHelp() {
+            alert('د مرستې لپاره زموږ سره په haqanijan70@gmail.com برېښنالیک وکړئ.');
+        }
+        
+        // زموږ سره اړیکه
+        function contactUs() {
+            window.location.href = 'mailto:haqanijan70@gmail.com';
+        }
+        
+        // د کارونکو مدیریت ښودل (یوازې د اډمینانو لپاره)
+        async function showUserManagement() {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.data().isAdmin) {
+                alert('یوازې اډمین کولی شي کارونکي مدیریت کړي!');
+                return;
+            }
+            
+            try {
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader-text').textContent = "کارونکي راټولېږي...";
+                
+                const usersList = document.getElementById('users-list');
+                usersList.innerHTML = '';
+                
+                const usersSnapshot = await db.collection('users').get();
+                
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const userItem = document.createElement('div');
+                    userItem.className = 'video-item';
+                    userItem.innerHTML = `
+                        <div class="video-item-info">
+                            <div class="video-item-title">${user.name}</div>
+                            <div class="video-item-meta">${user.email}</div>
+                            <div style="font-size: 12px; color: ${user.isAdmin ? 'var(--accent-color)' : user.isLimitedAdmin ? 'var(--secondary-color)' : 'var(--text-light)'}">
+                                ${user.isAdmin ? 'اصلي اډمین' : user.isLimitedAdmin ? 'محدود اډمین' : 'نورمال کارونکی'}
+                            </div>
+                        </div>
+                        <div>
+                            ${!user.isAdmin ? `
+                            <button class="admin-btn" onclick="toggleUserBlock('${doc.id}', ${user.isBlocked || false})">
+                                <i class="fas fa-${user.isBlocked ? 'lock-open' : 'ban'}"></i> ${user.isBlocked ? 'غیر بلاک' : 'بلاک'}
+                            </button>
+                            <button class="admin-btn" onclick="makeLimitedAdmin('${doc.id}', ${user.isLimitedAdmin || false})">
+                                <i class="fas fa-user-shield"></i> ${user.isLimitedAdmin ? 'لغوه کول' : 'محدود اډمین'}
+                            </button>
+                            ` : ''}
+                        </div>
+                    `;
+                    usersList.appendChild(userItem);
+                });
+                
+                document.getElementById('loader').style.display = 'none';
+                showPage('users-page');
+                
+            } catch (error) {
+                document.getElementById('loader').style.display = 'none';
+                alert(`د کارونکو د لیست ترلاسه کولو کې ستونزه: ${error.message}`);
             }
         }
         
-        // د تنظیماتو فعالیتونه
-        function showSettings() {
-            alert('د اپلیکیشن تنظیمات به ژر تر ژره اضافه شي!');
+        // د ویډیوګانو مدیریت ښودل (یوازې د اډمینانو لپاره)
+        async function showVideoManagement() {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.data().isAdmin) {
+                alert('یوازې اډمین کولی شي ویډیوګانې مدیریت کړي!');
+                return;
+            }
+            
+            try {
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader-text').textContent = "ویډیوګانې راټولېږي...";
+                
+                const videosList = document.getElementById('videos-list');
+                videosList.innerHTML = '';
+                
+                const videosSnapshot = await db.collection('videos').orderBy('uploadDate', 'desc').get();
+                
+                videosSnapshot.forEach(doc => {
+                    const video = doc.data();
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
+                    videoItem.innerHTML = `
+                        <div class="video-thumb">
+                            <img src="${video.thumbnailUrl}" alt="Video Thumbnail">
+                        </div>
+                        <div class="video-item-info">
+                            <div class="video-item-title">${video.title}</div>
+                            <div class="video-item-meta">${video.uploaderName} • ${video.views} لیدنې</div>
+                        </div>
+                        <button class="admin-btn" onclick="deleteVideo('${doc.id}')">
+                            <i class="fas fa-trash"></i> ړنګول
+                        </button>
+                    `;
+                    videosList.appendChild(videoItem);
+                });
+                
+                document.getElementById('loader').style.display = 'none';
+                showPage('videos-page');
+                
+            } catch (error) {
+                document.getElementById('loader').style.display = 'none';
+                alert(`د ویډیوګانو د لیست ترلاسه کولو کې ستونزه: ${error.message}`);
+            }
         }
         
-        function showLanguage() {
-            alert('اوس مهال یوازې پښتو ژبه ملاتړیږي!');
+        // کارونکی بلاک/غیر بلاک کول
+        async function toggleUserBlock(userId, isCurrentlyBlocked) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.data().isAdmin) return;
+            
+            try {
+                await db.collection('users').doc(userId).update({
+                    isBlocked: !isCurrentlyBlocked
+                });
+                alert(`کارونکی په بریالیتوب سره ${isCurrentlyBlocked ? 'غیر بلاک' : 'بلاک'} شو!`);
+                showUserManagement();
+            } catch (error) {
+                alert(`د ${isCurrentlyBlocked ? 'غیر بلاک' : 'بلاک'} کولو پر مهال ستونزه: ${error.message}`);
+            }
         }
         
-        function showStorage() {
-            const downloadedCount = videos.filter(v => v.downloaded).length;
-            alert(`تاسو ${downloadedCount} ویډیوګانې ډاونلوډ کړي دي. د ټولې ذخیرې اندازه: ${downloadedCount * 250}MB`);
+        // محدود اډمین جوړول/لغوه کول
+        async function makeLimitedAdmin(userId, isCurrentlyLimitedAdmin) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.data().isAdmin) return;
+            
+            try {
+                await db.collection('users').doc(userId).update({
+                    isLimitedAdmin: !isCurrentlyLimitedAdmin,
+                    canUpload: !isCurrentlyLimitedAdmin
+                });
+                alert(`کارونکی په بریالیتوب سره ${isCurrentlyLimitedAdmin ? 'له محدود اډمینۍ وغورځول شو' : 'محدود اډمین شو'}!`);
+                showUserManagement();
+            } catch (error) {
+                alert(`د ${isCurrentlyLimitedAdmin ? 'له محدود اډمینۍ د غورځولو' : 'محدود اډمین کولو'} پر مهال ستونزه: ${error.message}`);
+            }
         }
         
-        function showHelp() {
-            alert('د مرستې لپاره زموږ سره په afghanflix@example.com برېښنالیک وکړئ!');
-        }
-        
-        function showSearch() {
-            alert('د پلټنې سیستم به ژر تر ژره اضافه شي!');
+        // ویډیو ړنګول (یوازې د اډمینانو لپاره)
+        async function deleteVideo(videoId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.data().isAdmin) return;
+            
+            if (confirm('آیا تاسو ډاډه یاست چې غواړئ دا ویډیو ړنګه کړئ؟')) {
+                try {
+                    // د ویډیو ډیټا ړنګول
+                    await db.collection('videos').doc(videoId).delete();
+                    
+                    // د ویډیو فایل ړنګول (که چیرې غواړئ)
+                    // const videoRef = storage.ref(`videos/${videoId}`);
+                    // await videoRef.delete();
+                    
+                    alert('ویډیو په بریالیتوب سره ړنګه شوه!');
+                    showVideoManagement();
+                } catch (error) {
+                    alert(`د ویډیو د ړنګولو پر مهال ستونزه: ${error.message}`);
+                }
+            }
         }
         
         // Initialize
         window.addEventListener('DOMContentLoaded', function() {
-            updateConnectionStatus();
-            updateLikeButton();
-            updateSaveButton();
-            updateDownloadButton();
+            // د یوټیوب API چارجول
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
             
-            // د فایر بیز پیلول
-            firebase.initializeApp(firebaseConfig);
+            // د کارونکي حالت تعقیب
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
+                    document.getElementById('user-email').textContent = user.email;
+                    
+                    if (user.photoURL) {
+                        document.getElementById('profile-image').src = user.photoURL;
+                    }
+                    
+                    // Get user data from Firestore
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        
+                        // Check if admin or limited admin
+                        if (userData.isAdmin || userData.isLimitedAdmin) {
+                            document.getElementById('admin-controls').style.display = 'block';
+                            document.querySelectorAll('.admin-only').forEach(el => {
+                                el.style.display = 'block';
+                            });
+                            document.getElementById('upload-icon').style.display = 'inline-block';
+                        }
+                    }
+                } else {
+                    document.getElementById('admin-controls').style.display = 'none';
+                    document.querySelectorAll('.admin-only').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    document.getElementById('upload-icon').style.display = 'none';
+                }
+            });
+            
+            // د پروفایل عکس په کلیک کې د فایل انتخابولو فعالول
+            document.getElementById('profile-image').addEventListener('click', function() {
+                if (auth.currentUser) {
+                    document.getElementById('profile-image-input').click();
+                }
+            });
         });
-        
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
     </script>
-    
-    <!-- د فایر بیز SDK لینکونه -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
 </body>
 </html>
